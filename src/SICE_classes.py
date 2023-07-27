@@ -25,6 +25,7 @@ path_ROI='./ROIs/'
 
 def read_S3(fn):
     test_file = Path(fn)
+    # print(fn)
     r=np.zeros((5424, 2959))*np.nan
     if test_file.is_file():
         rx = rasterio.open(fn)
@@ -50,9 +51,9 @@ for i,band in enumerate(bands):
     r=read_S3(fn)
     Xs[i,:,:]=r
 
-# #%% test multi band array loading
-# plt.imshow(Xs[3,:,:])
-
+#%% test multi band array loading
+plt.imshow(Xs[3,:,:])
+#%%
 # load lables into a 3 D array
 
 rois=['bright_ice',
@@ -63,7 +64,7 @@ rois=['bright_ice',
     'red_snow']
 
 n_features=len(rois)
-#%%
+
 LABELS=np.zeros(((n_features,ni,nj)))
 
 for i,roi in enumerate(rois):
