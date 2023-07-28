@@ -104,8 +104,6 @@ for i, roi in enumerate(rois):
         [read_S3(f"{path_raw}2019-08-02_{band}.tif")[mask] for band in bands]
     ).T
 
-    S3_data_for_labels = S3_data_for_labels[~np.isnan(S3_data_for_labels)]
-
     S3_data_for_labels_all.append(S3_data_for_labels)
 
     labels.append(np.repeat(i, S3_data_for_labels.shape[0]))
@@ -116,6 +114,11 @@ labels_for_svm = np.hstack(
 inputs_for_svm = np.vstack(
     S3_data_for_labels_all
 )  # 2D array (size = nb of S3 bands * nb of pixels labelled, values are the S3 reflectances)
+
+no_nan_mask = np.where(np.sum(~np.isnan(inputs_for_svm), axis=1) == 4)[0]
+
+inputs_for_svm = inputs_for_svm[no_nan_mask, :]
+labels_for_svm = labels_for_svm[no_nan_mask]
 
 # %% train SVM
 
