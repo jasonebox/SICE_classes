@@ -13,6 +13,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import geopandas as gpd
 from pathlib import Path
+from sklearn.svm import LinearSVC
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import make_classification
+from sklearn import svm
 
 # ## change to your system's login name to change dir for local work
 if os.getlogin() == "jason":
@@ -86,81 +91,39 @@ for i, roi in enumerate(rois):
         plt.show()
 # %% test multi label array loading
 plt.imshow(LABELS[2, :, :])
-# %% https://scikit-learn.org/stable/modules/svm.html
-# from sklearn import tree
 
-# masked2=masked.copy()
+# %% format inputs and labels
 
-# masked2[~np.isfinite(masked2)]=0.
-# temp2=r.copy()
-# temp2[~np.isfinite(temp2)]=0.
+labels = []
+S3_data_for_labels_all = []
 
-# print(np.shape(masked2))
-# print(np.shape(temp2))
-# %%
-y = LABELS
-X = Xs
-from sklearn.svm import LinearSVC
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import make_classification
+for i, roi in enumerate(rois):
+    mask = np.isfinite(LABELS[i, :, :])
+
+    S3_data_for_labels = np.vstack(
+        [read_S3(f"{path_raw}2019-08-02_{band}.tif")[mask] for band in bands]
+    ).T
+
+    S3_data_for_labels = S3_data_for_labels[~np.isnan(S3_data_for_labels)]
+
+    S3_data_for_labels_all.append(S3_data_for_labels)
+
+    labels.append(np.repeat(i, S3_data_for_labels.shape[0]))
+
+labels_for_svm = np.hstack(
+    labels
+)  # 1D array (size = nb of pixels labelled, values are label numbers)
+inputs_for_svm = np.vstack(
+    S3_data_for_labels_all
+)  # 2D array (size = nb of S3 bands * nb of pixels labelled, values are the S3 reflectances)
+
+# %% train SVM
 
 X, y = make_classification(n_features=n_features, random_state=0)
 clf = make_pipeline(StandardScaler(), LinearSVC(dual="auto", random_state=0, tol=1e-5))
-clf.fit(X, y)
+clf.fit(inputs_for_svm, labels_for_svm)
+
 # %%
 
-
-# #%%
-
-# fs=18
-# plt.close()
-# fig, ax = plt.subplots(figsize=(10, 10))
-# ax.imshow(temp)
-# plt.axis('off')
-# # plt.title(datex)
-
-
-# # plt.text(xx0, yy0+dy*cc,datex,
-# #          color='k',
-# #           transform=ax.transAxes, fontsize=fs*mult,ha="left")
-# cc=0
-# xx0=0.03 ; yy0=0.955
-# mult=0.8
-# color_code='k'
-# props = dict(boxstyle='round', facecolor='w', alpha=1,edgecolor='w')
-# plt.text(xx0, yy0, datex,
-#         fontsize=fs*mult,color=color_code,bbox=props,rotation=0,transform=ax.transAxes) ; cc+=1.5
-
-# # du_color_bar=0
-
-# # if du_color_bar:
-# #     cbax = ax.inset_axes([1.04, 0.01, 0.05, 0.4], transform=ax.transAxes)
-# #     # cbax.ax.set_label(fontsize=12)
-
-# #     # cbax.set_title('vertical\nwinds,\nm/s',fontsize=font_size,c='k',ha='center')
-# #     # clb=plt.colorbar(cntr, ax=ax, cax=cbax, shrink=0.7,orientation='vertical')#,extend=extend)
-# #     # clb.ax.set_title(band+'\n',fontsize=12,ha='left')
-# #     cbar = fig.colorbar(cntr,ax=ax, cax=cbax, ticks=[0,1,2,3], orientation='vertical')
-# #     cbar.ax.tick_params(labelsize=12)
-# #     cbar.ax.set_xticklabels(['nan', 'dark ice', 'melted snow','bare ice','dry snow','red surface'])  # horizontal colorbar
-
-# # ax.set_facecolor('k')
-# # plt.margins(0,0)
-# ax.patch.set_edgecolor('black')
-
-# ax.patch.set_linewidth('1')
-
-
-# ly='p'
-
-# if ly == 'x':plt.show()
-
-# if ly == 'p':
-#     band='classes'
-#     # opath='/Users/jason/0_dat/S3/opendap/Figs/'+region_name+'/'
-#     opath='/Users/jason/0_dat/S3/opendap/'+region_name+'/'+year+'/'
-#     os.sLABELStem('mkdir -p '+opath)
-#     figname=opath+datex+'_RGB.png'
-#     plt.savefig(figname, bbox_inches='tight', dpi=300, facecolor='k')
-#     os.sLABELStem('open '+figname)
+clf = svm.SVC(decision_function_shape="ovo")
+clf.fit(inputs_for_svm, labels_for_svm)
