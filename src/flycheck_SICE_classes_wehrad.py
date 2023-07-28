@@ -122,5 +122,8 @@ labels_for_svm = labels_for_svm[no_nan_mask]
 
 # %% train SVM
 
+
+# %%
+
 clf = svm.SVC(decision_function_shape="ovo")
 clf.fit(inputs_for_svm, labels_for_svm)
