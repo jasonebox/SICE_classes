@@ -129,7 +129,6 @@ ni = 5424
 nj = 2959  # all greenland raster dimensions
 
 band = bands[0]
-x_grid,y_grid,dummy,proj = opentiff(f"{raster_path}{datex}_{band}.tif")
 
 # initialise array to contain band data
 Xs = np.zeros(((n_bands, ni, nj)))
@@ -209,11 +208,11 @@ inputs_for_svm = inputs_for_svm[no_nan_mask, :]
 labels_for_svm = labels_for_svm[no_nan_mask]
 
 
-### Splitting dataset into  Training and Test set ###
+### Splitting dataset into Training and Test set ###
 # When there is more labeled data, it would be good to have a another date as test set #
 
 data_train, data_test, label_train, label_test \
-     = train_test_split(inputs_for_svm, labels_for_svm, test_size=0.33, random_state=42) 
+     = train_test_split(inputs_for_svm, labels_for_svm, test_size=0.10, random_state=42) 
 
 ### Maybe introduce robust statistics ### 
 # ml_est = sum(w_i * d_i) / sum(w_i)
@@ -258,7 +257,7 @@ n_alpha=len(alpha)
 lloss_svc = np.ones_like(alpha)
 
 for i,a in enumerate(alpha):
-  print(f'Finding Solution for Alpha Value no. {i} {n_alpha-i})
+  print(f'Finding Solution for Alpha Value no. {i} {n_alpha-i}')
   C = 1 / a
   clf = svm.SVC(C = C, decision_function_shape="ovo",probability = True)
   clf.fit(data_train, label_train,sample_weight=w_samples)  
@@ -307,15 +306,8 @@ plt.show()
 
 # score_df
 
-# %% train and test SVM 
+# %% train SVM
 
-# alpha = np.arange(1,10,0.01)
-# 
-# for a in alpha:
-#   C = 1 / a
-#   clf = svm.SVC(C = C, decision_function_shape="ovo")
-#   clf.fit(inputs_for_svm, labels_for_svm,sample_weight=w_samples)
-#
 alpha = 0
 
 if alpha == 0:
@@ -324,7 +316,7 @@ else:
     C = 1 / alpha
 
 clf = svm.SVC(C = C, decision_function_shape="ovo",probability = True)
-clf.fit(inputs_for_svm, labels_for_svm,sample_weight=w_samples)
+clf.fit(data_train, label_train,sample_weight=w_samples)
 
 model_params = clf.get_params()
 
@@ -344,6 +336,13 @@ S3_data_for_predict_all = []
 
 
 # Data to predict a Label
+
+x_grid,y_grid,dummy,proj = opentiff(f"{raster_path}{datex}_{band}.tif")
+
+
+### Because we are predicting on the same date as the training data , ### 
+### i made mask to remove the part which is labeled already ### 
+### If we predict on another date we do not this mask! ###
 
 mask_predict = ~np.isfinite(LABELS[:, :, :])
 mask_predict = np.array([[all(mask_predict[:,n,m]) for m in np.arange(nj)] for n in np.arange(ni)])
