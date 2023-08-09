@@ -104,6 +104,7 @@ os.chdir(base_path)
 # relative paths
 path_raw = "./SICE_rasters/"
 path_ROI = "./ROIs/"
+path_Figs = "./Figs/"
 
 raster_path = base_path + path_raw
 
@@ -331,7 +332,7 @@ print(f"Accuracy of Model {score_svc}")
 print(f"Log Loss of Model {lloss_svc}")
 
 # %% Data to Classify
-
+# takes ~15 sec
 S3_data_for_predict_all = []
 
 
@@ -362,7 +363,7 @@ x_coor = x_coor[no_nan_mask]
 y_coor = y_coor[no_nan_mask]
 
 # %% Model Predict
-
+# takes ~10 minutes
 labels_predict = clf.predict(S3_data_for_predict_all)
 
 # %% Regridding to SICE Grid and saving as geotiff
@@ -380,3 +381,62 @@ for i,(xmid,ymid) in enumerate(zip(x_grid.ravel(),y_grid.ravel())):
 
 file = raster_path + os.sep +  datex +'labels_v2.tif'
 exporttiff(x_grid,y_grid,datagrid,proj,file)
+# %% plot classes raster
+# classes=read_S3(f"{file}")
+
+classes=datagrid
+nams=rois
+
+fs=12
+
+plt.close()
+fig, ax = plt.subplots(figsize=(10, 10))
+
+co=150
+palette = np.array([
+            [0,0,0], # NaN
+            [255, 255, 255], # 5 dry snow
+            [255,200,200],   # 3, melted snow
+            [100,100,250], # 4 flooded snow
+            [255, 0, 0], # 6 red snow
+            [co,co,co],   # 2 bright bare ice
+            [200,100,200],   # 1 dark bare ice
+            # [255,165, 0], # 6 red ice
+            ]
+                    )  # white
+
+classesx=classes.copy()
+classesx+=1
+classesx[np.isnan(classesx)]=0
+RGB=palette[classesx.astype(int)]
+cntr=ax.imshow(RGB)
+
+plt.axis('off')
+
+mult=0.6
+xx0=0.6 ; yy0=0.04 ; dy=0.02 ; cc=0
+for i,nam in enumerate(nams):
+    plt.text(xx0, yy0+dy*cc,nam,
+              color=palette[i+1]/255,
+              transform=ax.transAxes, fontsize=fs*mult,ha="left")
+    cc+=1
+
+cc=0
+xx0=0.015 ; yy0=0.955
+xx0=0.62 ; yy0=0.18
+mult=0.8
+color_code='k'
+props = dict(boxstyle='round', facecolor='w', alpha=1,edgecolor='w')
+plt.text(xx0, yy0, datex,
+        fontsize=fs*mult,color=color_code,bbox=props,rotation=0,transform=ax.transAxes) ; cc+=1.5
+
+ly='p'
+if ly == 'x':plt.show()
+
+if ly == 'p':
+    band='classes'
+    # opath='/Users/jason/0_dat/S3/opendap/Figs/'+region_name+'/'
+    os.system('mkdir -p '+path_Figs)
+    figname=path_Figs+datex+'_classes_SVC.png' 
+    plt.savefig(figname, bbox_inches='tight', dpi=200, facecolor='k')
+    os.system('open '+figname)
