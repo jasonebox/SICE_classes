@@ -56,6 +56,20 @@ def exporttiff(x,y,z,crs,filename):
         resy = (y[0,0] - y[0,1])
         transform = Affine.translation((y.ravel()[0]),(x.ravel()[0])) * Affine.scale(resx, resy)
     
+    # with rio.open(
+    #     path,
+    #     'w',
+    #     driver='GTiff',
+    #     height=z.shape[0],
+    #     width=z.shape[1],
+    #     count=1,
+    #     compress='lzw',
+    #     dtype=z.dtype,
+    #     # dtype=rasterio.uint8,
+    #     crs=crs,
+    #     transform=transform,
+    #     ) as dst:
+    #         dst.write(z, 1)
     with rasterio.open(
     filename,
     'w',
@@ -63,6 +77,7 @@ def exporttiff(x,y,z,crs,filename):
     height=z.shape[0],
     width=z.shape[1],
     count=1,
+    compress='lzw',
     dtype=z.dtype,
     crs=crs,
     transform=transform,
@@ -79,9 +94,10 @@ if os.getlogin() == "jason":
     base_path = "/Users/jason/Dropbox/S3/SICE_classes/"
 if os.getlogin() == "adrien":
     base_path = "/home/adrien/EO-IO/SICE_classes/"
-    
-current_path = os.getcwd()
-base_path = os.path.abspath('..')
+
+# !! Rasmus paths
+# current_path = os.getcwd()
+# base_path = os.path.abspath('..')
 
 os.chdir(base_path)
 
@@ -90,7 +106,6 @@ path_raw = "./SICE_rasters/"
 path_ROI = "./ROIs/"
 
 raster_path = base_path + path_raw
-
 
 def read_S3(fn):
     test_file = Path(fn)
@@ -104,16 +119,17 @@ def read_S3(fn):
         print("no file")
     return r
 
-
 # bands to consider for classification
 bands = ["r_TOA_02", "r_TOA_04", "r_TOA_06", "r_TOA_21"]
 n_bands = len(bands)
+
+datex='2019-08-02'
 
 ni = 5424
 nj = 2959  # all greenland raster dimensions
 
 band = bands[0]
-x_grid,y_grid,dummy,proj = opentiff(f"{raster_path}2019-08-02_{band}.tif")
+x_grid,y_grid,dummy,proj = opentiff(f"{raster_path}{datex}_{band}.tif")
 
 # initialise array to contain band data
 Xs = np.zeros(((n_bands, ni, nj)))
@@ -121,12 +137,13 @@ Xs = np.zeros(((n_bands, ni, nj)))
 # load bands into a 3 D array
 for i, band in enumerate(bands):
     print("reading " + band)
-    fn = path_raw + "2019-08-02_" + band + ".tif"
+    fn = path_raw +  datex+ "_" + band + ".tif"
     r = read_S3(fn)
     Xs[i, :, :] = r
 
 # %% test multi band array loading
 plt.imshow(Xs[1, :, :])
+plt.axis("off")
 plt.show()
 # %%
 # load lables into a 3 D array
@@ -158,7 +175,9 @@ for i, roi in enumerate(rois):
     
 
 # %% test multi label array loading
-plt.imshow(LABELS[2, :, :])
+plt.imshow(LABELS[1, :, :])
+plt.axis("off")
+plt.show()
 
 # %% format inputs and labels and make test dataset
 
@@ -170,7 +189,7 @@ for i, roi in enumerate(rois):
     mask = np.isfinite(LABELS[i, :, :])
 
     S3_data_for_labels = np.vstack(
-        [read_S3(f"{path_raw}2019-08-02_{band}.tif")[mask] for band in bands]
+        [read_S3(f"{path_raw}{datex}_{band}.tif")[mask] for band in bands]
     ).T
     
     S3_data_for_labels_all.append(S3_data_for_labels)
@@ -230,13 +249,16 @@ w_samples = np.array([np.nanmean(w) for w in w_all])
  
 
 # %% Find Regularization Parameter C
+# takes several minutes
 
 alpha = np.arange(1,10,0.1)
+
+n_alpha=len(alpha)
 
 lloss_svc = np.ones_like(alpha)
 
 for i,a in enumerate(alpha):
-  print(f'Finding Solution for Alpha Value no. {i}')
+  print(f'Finding Solution for Alpha Value no. {i} {n_alpha-i})
   C = 1 / a
   clf = svm.SVC(C = C, decision_function_shape="ovo",probability = True)
   clf.fit(data_train, label_train,sample_weight=w_samples)  
@@ -244,6 +266,9 @@ for i,a in enumerate(alpha):
   lloss_svc[i] = log_loss(label_test,label_prob)
   
   #score_svc[i] = clf.sore(data_test,label_test)
+
+#%% plot result
+alpha = np.arange(1,10,0.1)
 
 plt.figure(figsize=(14,8))
 ax=plt.gca()
@@ -293,7 +318,6 @@ plt.show()
 #
 alpha = 0
 
-
 if alpha == 0:
     C = 1
 else:
@@ -328,7 +352,7 @@ x_coor = x_grid[mask_predict]
 y_coor = y_grid[mask_predict]
 
 S3_data_for_predict = np.vstack(
-     [read_S3(f"{path_raw}2019-08-02_{band}.tif")[mask_predict] for band in bands]
+     [read_S3(f"{path_raw}{datex}_{band}.tif")[mask_predict] for band in bands]
  ).T
 
 
@@ -355,5 +379,5 @@ for i,(xmid,ymid) in enumerate(zip(x_grid.ravel(),y_grid.ravel())):
         if len(ii) > 0:
             datagrid.ravel()[i] = labels_predict.ravel()[ii]
 
-file = raster_path + os.sep + '2019_08_02_labels_v2.tif'
+file = raster_path + os.sep +  datex +'labels_v2.tif'
 exporttiff(x_grid,y_grid,datagrid,proj,file)
