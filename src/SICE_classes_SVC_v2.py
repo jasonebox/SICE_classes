@@ -3,8 +3,17 @@
 """
 Created on Mon Jul 24 12:41:27 2023
 
-@author: Jason, Adrien, Rasmus
+@authors: Jason, Rasmus, Adrien
 
+issues:
+    make relative paths smarter
+    have code integrate better with Thredds, to not have to DL what files are needed locally
+    see !! was 4 now is n_bands (currently 3), lines ~505 and ~339
+    want to re-insert the band data that is masked out in the final classification
+        adjust code to not clip data that's outside the training set
+    better results for more training data, e.g. different SZA, sza
+        in the training, this code wants to load more than one date
+    how to feed in a different date for the prediction? in this case, monthly means, see !! below ~line 496
 """
 import pandas as pd
 import os
@@ -195,10 +204,10 @@ if os.getlogin() == "jason":
     base_path = "/Users/jason/Dropbox/S3/SICE_classes/"
 if os.getlogin() == "adrien":
     base_path = "/home/adrien/EO-IO/SICE_classes/"
-
+if os.getlogin() == "rasmus":
 # !! Rasmus paths
-# current_path = os.getcwd()
-# base_path = os.path.abspath('..')
+    current_path = os.getcwd()
+    base_path = os.path.abspath('..')
 
 os.chdir(base_path)
 
@@ -221,6 +230,11 @@ region_name='Greenland'
 datex='2019-08-02'; year='2019'
 
 # datex='2017-07-28' ; year='2017'
+# !! modify somehow to feed N dates 
+# dates=['2019-08-02','2017-07-28']
+# dates=['2019-08-02']
+
+# for datex in dates:
 
 do_generate_NDIX=0
 
@@ -328,7 +342,7 @@ inputs_for_svm = np.vstack(
     S3_data_for_labels_all
 )  # 2D array (size = nb of S3 bands * nb of pixels labelled, values are the S3 reflectances)
 
-#!! was 4 now is n_bands (currently 3)
+# !! is this kosher?
 no_nan_mask = np.where(np.sum(~np.isnan(inputs_for_svm), axis=1) == n_bands)[0]
 
 inputs_for_svm = inputs_for_svm[no_nan_mask, :]
@@ -347,7 +361,8 @@ data_train, data_test, label_train, label_test \
 ### reweighting algorithm using Huber weights, until convergence ###
 
 def huber_w(w,d,sigma):
-    
+    # Huber weights, by variance for each band to allow higher prediction skill
+
     break_p = 1.345  
     ml_est = sum(w * d) / sum(w)
     eps = (d - ml_est) / sigma 
@@ -371,7 +386,7 @@ for n in np.arange(n_features):
         w_all[:,b][label_train == n] = w 
 
 w_samples = np.array([np.nanmean(w) for w in w_all])        
- 
+
 
 # %% Find Regularization Parameter C
 # takes several minutes
@@ -489,11 +504,13 @@ mask_predict = np.array([[all(mask_predict[:,n,m]) for m in np.arange(nj)] for n
 x_coor = x_grid[mask_predict]
 y_coor = y_grid[mask_predict]
 
+#!! predicting on say another date
 S3_data_for_predict = np.vstack(
-     [read_S3(f"{path_raw}{region_name}/{year}/{datex}_{band}.tif")[mask_predict] for band in bands]
+      [read_S3(f"{path_raw}{region_name}/{year}/{datex}_{band}.tif")[mask_predict] for band in bands]
+     # [read_S3(f"{path_raw}monthly/{band}_{year}07.tif")[mask_predict] for band in bands] # !!
  ).T
 
-
+# !! is this kosher?
 no_nan_mask = np.where(np.sum(~np.isnan(S3_data_for_predict), axis=1) == n_bands)[0]
 S3_data_for_predict_all =  S3_data_for_predict[no_nan_mask, :]
 
@@ -514,6 +531,7 @@ print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
 
 # %% Regridding to SICE Grid and saving as geotiff
 # takes ~12 minutes
+# !! optimise?? live with it until it stops us
 
 st = time.time()
 
