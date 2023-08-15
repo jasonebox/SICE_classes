@@ -224,12 +224,14 @@ bands = ["r_TOA_02", "r_TOA_04", "r_TOA_06", "r_TOA_21"]
 bands = ["r_TOA_02", "r_TOA_NDXI_0806", "r_TOA_NDXI_1110", "r_TOA_NDXI_0802", "r_TOA_21"] ; version_name='5bands_3NDXI'
 bands = ["r_TOA_02", "r_TOA_04", "r_TOA_06", "r_TOA_08", "r_TOA_10", "r_TOA_11", "r_TOA_21"] ; version_name='7bands_02_04_06_08_10_11_21'
 bands = ["r_TOA_02", "r_TOA_04", "r_TOA_06", "r_TOA_08", "r_TOA_21"] ; version_name='5bands_02_04_06_08_21'
+# bands = ["r_TOA_02", "r_TOA_06", "r_TOA_08", "r_TOA_21"] ; version_name='4bands_02_06_08_21'
 n_bands = len(bands)
 
 region_name='Greenland'
 datex='2019-08-02'; year='2019'
-
+datex='2021-07-30'; year='2021'
 # datex='2017-07-28' ; year='2017'
+
 # !! modify somehow to feed N dates 
 # dates=['2019-08-02','2017-07-28']
 # dates=['2019-08-02']
@@ -239,21 +241,22 @@ datex='2019-08-02'; year='2019'
 do_generate_NDIX=0
 
 if do_generate_NDIX:
-    # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0806.tif")
+    normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0806.tif")
     # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_11.tif",
     #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_10.tif",
     #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_1110.tif")
-    # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0802.tif")
-    temp=RGBx(f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
-      f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
-      f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif")
-    if show_plots:
-        plt.imshow(temp)
-        plt.axis("Off")
+    normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0802.tif")
+
+temp=RGBx(f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+  f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
+  f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif")
+if show_plots:
+    plt.imshow(temp)
+    plt.axis("Off")
 
 #%%
 ni = 5424 ; nj = 2959  # all greenland raster dimensions
@@ -271,8 +274,8 @@ for i, band in enumerate(bands):
 # %% test multi band array loading
 if show_plots:
     print('test multi band array loading')
-    band_choice_index=1
-    plt.imshow(Xs[band_choice_index, :, :],vmin=-0.05,vmax=0.05)
+    band_choice_index=4
+    plt.imshow(Xs[band_choice_index, :, :])#,vmin=-0.05,vmax=0.05)
     plt.axis("off")
     plt.title(bands[band_choice_index])
     plt.colorbar()
@@ -291,13 +294,14 @@ for i, feature in enumerate(features):
     ROI_label = ROI_label_gdf.to_crs("epsg:3413").iloc[0].geometry
 
     band='r_TOA_NDXI_0806'
+    band='r_TOA_02'
     fn = f"{path_raw}{region_name}/{year}/{datex}_{band}.tif" #path_raw+region_name+'/'+year+'/'+datex+ "_" + band + ".tif"
     temp = rasterio.open(fn)
     masked = rasterio.mask.mask(temp, [ROI_label], nodata=np.nan)[0][0, :, :]
     LABELS[i, :, :] = masked
 
     print(feature)
-    print('     mean',np.nanmean(masked),'stdev',np.nanstd(masked))
+    print('     mean',np.nanmean(masked),'median',np.nanmedian(masked),'stdev',np.nanstd(masked))
 
     do_histogram = 1
     if do_histogram and show_plots:
@@ -310,7 +314,7 @@ for i, feature in enumerate(features):
 # %% test multi label array loading
 if show_plots:
     print('test multi label array loading')
-    label_choice_index=5
+    label_choice_index=0
     plt.imshow(LABELS[label_choice_index, :, :])
     plt.axis("off")
     plt.title(features[label_choice_index])
