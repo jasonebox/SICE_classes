@@ -143,6 +143,28 @@ def exporttiff(x,y,z,crs,filename):
     
     return None 
 
+def ratio_image(write_out,fn_band_A,fn_band_B,ofile):
+    
+    rat=np.zeros((5424, 2959))*np.nan
+
+    test_file = Path(fn_band_A)
+    if test_file.is_file():
+        band_Ax = rasterio.open(fn_band_A)
+        profile=band_Ax.profile
+        band_A=band_Ax.read(1)
+    
+        band_Bx = rasterio.open(fn_band_B)
+        profile=band_Bx.profile
+        band_B=band_Bx.read(1)
+        
+        rat=band_A/band_B
+            
+        if write_out:
+            with rasterio.Env():
+                with rasterio.open(ofile, 'w', **profile) as dst:
+                    dst.write(rat, 1)
+    return rat
+
 def read_S3(fn):
     test_file = Path(fn)
     # print(fn)
@@ -238,18 +260,22 @@ datex='2021-07-30'; year='2021'
 
 # for datex in dates:
 
-do_generate_NDIX=0
+do_generate_rasters=1
 
-if do_generate_NDIX:
-    normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
-          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
-          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0806.tif")
+if do_generate_rasters:
+    # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
+    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0806.tif")
     # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_11.tif",
     #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_10.tif",
     #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_1110.tif")
-    normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
-          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
-          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0802.tif")
+    # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
+    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0802.tif")
+
+    ratio_BRx=ratio_image(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_0802.tif")
 
 temp=RGBx(f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
   f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
