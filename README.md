@@ -27,7 +27,7 @@ Areas above ~1.2 in the ratio are to be classified.
 <img width="200" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/a349e61c-7f7d-4d06-ac5e-59e39d6e6f67">
 
 
-Be more sure by checking using the RGB image that ./src/from/SICE_classes_SVC_v2.py outputs to the plot window
+Be more sure by checking using the RGB image that ./src/SICE_classes_SVC_v2.py outputs to the plot window. Note there is an issue to develop to make the RGB image output to a geotiff!
 
 ## dry_snow
 use band 21, straight forward to see brighest snow covered areas at the uppermost ice sheet elevations
@@ -37,4 +37,12 @@ use band 21, straight forward to see darker snow covered areas as compared to th
 
 ## red_snow
 
-use band 08 to band 06 ratio output by ./src/from 
+use band 08 to band 06 normalised difference ratio output by ./src/SICE_classes_SVC_v2.py outputs when user chooses do_generate_rasters=1
+
+In this example, there is a small red? area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east.
+
+<img width="500" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/4e65808c-13ca-44c0-966b-8b6df7c8bc37">
+<img width="500" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/a9281fab-5d88-4544-959c-3454ba781d41">
+
+
+
