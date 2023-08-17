@@ -39,6 +39,8 @@ use band 21, straight forward to see darker snow covered areas as compared to th
 
 use band 08 to band 06 normalised difference ratio output by ./src/SICE_classes_SVC_v2.py outputs when user chooses do_generate_rasters=1
 
+red snow areas are where the NDIX is above ~0.0. The magnitude is small, so it may be questionable how accurate this approach is. Let's check out the results.
+
 In this example, there is a small red? area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east.
 
 <img width="500" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/4e65808c-13ca-44c0-966b-8b6df7c8bc37">
