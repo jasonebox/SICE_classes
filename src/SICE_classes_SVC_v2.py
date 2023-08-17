@@ -6,6 +6,8 @@ Created on Mon Jul 24 12:41:27 2023
 @authors: Jason, Rasmus, Adrien
 
 issues:
+    For Jasper: see !! 
+    for Rasmus:
     make relative paths smarter
     have code integrate better with Thredds, to not have to DL what files are needed locally
     see !! was 4 now is n_bands (currently 3), lines ~505 and ~339
@@ -35,7 +37,6 @@ import time
 
 st_all = time.time()
 
-show_plots=0
 
 def normalisedx(write_out,fn_band_A,fn_band_B,ofile):
     # normalised difference index
@@ -251,8 +252,17 @@ n_bands = len(bands)
 
 region_name='Greenland'
 datex='2019-08-02'; year='2019'
-datex='2021-07-30'; year='2021'
+# datex='2021-07-30'; year='2021'
 # datex='2017-07-28' ; year='2017'
+
+#!! other dates
+# 2017-07-12
+# 2020-07-22
+datex='2022-07-31'; year='2022'
+
+show_plots=1
+
+
 
 # !! modify somehow to feed N dates 
 # dates=['2019-08-02','2017-07-28']
@@ -263,19 +273,23 @@ datex='2021-07-30'; year='2021'
 do_generate_rasters=1
 
 if do_generate_rasters:
-    # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0806.tif")
-    # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_11.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_10.tif",
-    #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_1110.tif")
+    # for red snow
+    normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0608.tif")
+
     # normalised=normalisedx(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
     #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
     #       f"{path_raw}{region_name}/{year}/{datex}_r_TOA_NDXI_0802.tif")
 
+    # for flooded areas
     ratio_BRx=ratio_image(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
           f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
           f"{path_raw}{region_name}/{year}/{datex}_r_TOA_0802.tif")
+
+    ratio_BRx=ratio_image(1,f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
+          f"{path_raw}{region_name}/{year}/{datex}_r_TOA_0806.tif")
 
 temp=RGBx(f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
   f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
