@@ -21,7 +21,11 @@ use band 08 to band 02 ratio output by ./src/from/SICE_classes_SVC_v2.py
 
 load the tif in QGIS, adjust contrast to from 1 to 1.6, then see the bright areas.
 
-Areas above 1.2 in the ratio are blue!
+The profile below is NE ice sheet, across a blue area easily visible in the 'true color' RGB image also below
+Areas above ~1.2 in the ratio are to be classified.
+<img width="400" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/05e4cb10-ea01-4d77-bf12-7c55c0b3104e">
+<img width="200" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/a349e61c-7f7d-4d06-ac5e-59e39d6e6f67">
+
 
 Be more sure by checking using the RGB image that ./src/from/SICE_classes_SVC_v2.py outputs to the plot window
 
