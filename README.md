@@ -2,7 +2,7 @@
 
 # how to label:
 
-features = ["dry_snow", "melted_snow", "flooded_snow","red_snow","bright_ice", "dark_ice"]
+features = ["dry_snow", "melted_snow", "flooded_snow", "red_snow", "bright_ice", "dark_ice"]
 
 The labling work is by generating shapefiles using QGIS named as above and stored in ./ROIs/Greenland in the appropriate dates. It is necessary to run ./src/SICE_classes_SVC_v2.py to generate the red to blue ratio image for flooded_snow and the NDIX image for red to green for red_snow. When running that top cell, select the correct date and see the output appear in ./SICE_rasters/ ... Open all rasters in QGIS to visualise and label as in instructions below. Just ask questions if any doubt and don't worry a lot about drawing the label polygons perfectly, more important is getting relatively large samples, i.e. >100 pixels... 1000 pixels should be enough but may be hard to find for some dates for the flooded snow and red_snow classes in particular. Talk with Rasmus about what to do when there are NO valid pixels for a given date.
 

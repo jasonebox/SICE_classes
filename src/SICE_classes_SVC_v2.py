@@ -8,14 +8,14 @@ Created on Mon Jul 24 12:41:27 2023
 issues:
     For Jasper: see !! 
     for Rasmus:
-    make relative paths smarter
-    have code integrate better with Thredds, to not have to DL what files are needed locally
-    see !! was 4 now is n_bands (currently 3), lines ~505 and ~339
-    want to re-insert the band data that is masked out in the final classification
+    - make relative paths smarter
+    - have code integrate better with Thredds, to not have to DL what files are needed locally
+    - see !! was 4 now is n_bands (currently 3), lines ~505 and ~339
+    - want to re-insert the band data that is masked out in the final classification
         adjust code to not clip data that's outside the training set
-    better results for more training data, e.g. different SZA, sza
+    - better results for more training data, e.g. different SZA, sza
         in the training, this code wants to load more than one date
-    how to feed in a different date for the prediction? in this case, monthly means, see !! below ~line 496
+    - how to feed in a different date for the prediction? in this case, monthly means, see !! below ~line 496
 """
 import pandas as pd
 import os
@@ -179,7 +179,7 @@ def read_S3(fn):
         print("no file")
     return r
 
-from skimage import exposure
+from skimage import exposure # maybe add this to the import packages block at the top?
 
 def RGBx(f_Red,f_Green,f_Blue):
     red=read_S3(f_Red)
@@ -231,6 +231,8 @@ if os.getlogin() == "rasmus":
 # !! Rasmus paths
     current_path = os.getcwd()
     base_path = os.path.abspath('..')
+if os.getlogin() == "Jasper":
+    base_path = "E:/Jasper/Denmark/GEUS/SICE_classes/"
 
 os.chdir(base_path)
 
@@ -258,7 +260,7 @@ datex='2019-08-02'; year='2019'
 #!! other dates
 # 2017-07-12
 # 2020-07-22
-datex='2022-07-31'; year='2022'
+# datex='2022-07-31'; year='2022'
 
 show_plots=1
 
@@ -297,7 +299,7 @@ temp=RGBx(f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
 if show_plots:
     plt.imshow(temp)
     plt.axis("Off")
-
+    
 #%%
 ni = 5424 ; nj = 2959  # all greenland raster dimensions
 
@@ -354,7 +356,7 @@ for i, feature in enumerate(features):
 # %% test multi label array loading
 if show_plots:
     print('test multi label array loading')
-    label_choice_index=0
+    label_choice_index=1
     plt.imshow(LABELS[label_choice_index, :, :])
     plt.axis("off")
     plt.title(features[label_choice_index])
