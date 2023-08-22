@@ -37,7 +37,6 @@ import time
 
 st_all = time.time()
 
-
 def normalisedx(write_out,fn_band_A,fn_band_B,ofile):
     # normalised difference index
     test_file = Path(fn_band_A)
@@ -220,7 +219,8 @@ def RGBx(f_Red,f_Green,f_Blue):
 #                    # Gamma
     img = exposure.adjust_gamma(img, 2)
     
-    return img
+    return img    
+
 
 # ## change to your system's login name to change dir for local work
 if os.getlogin() == "jason":
