@@ -1,0 +1,11 @@
+Classification notes:
+
+Dark ice: TOA_08 grey areas less than 0.4 - avoid lakes and bright spots
+Bright ice: TOA_02 between 0.6 and 0.9 together with RGB to check color
+Flooded snow: TOA_0802 between 1.2 and 1.6 together with RGB to check color
+Dry snow: TOA_21 lighter areas that are not clouds - pretty straight forward
+Melted snow: TOA_21 darker areas that are not any of the other one - again straight forward
+Red snow: NDXI_0608 between -0.05 and -0.03 together with RGB to check color
+Lakes: RGB should have all needed information, otherwise go with TOA_08 less than 0.2-ish
+
+
