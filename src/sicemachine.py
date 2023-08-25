@@ -77,12 +77,12 @@ class ClassifierSICE():
    
         #ds_ref = xr.open_dataset(f'https://thredds.geus.dk/thredds/dodsC/SICE_Greenland_500m/{ref_DATASET}')
         training_data = {}
-        
+                
         print(f"Training Dates {training_dates}")
         
         for d,ref,re in zip(training_dates,dataset_ids,regions):     
+            print(f"Getting Training Data for {d}")
             training_data[d] = {}
-           
             ds = xr.open_dataset(f'https://thredds.geus.dk/thredds/dodsC/SICE_{re}_500m/{ref}')
             shp_files_date = [s for s in shp_files if d in s.replace('-','_')]
             
@@ -92,9 +92,7 @@ class ClassifierSICE():
                 
                 x = np.array(ds[self.training_bands[0]].x)
                 y = np.array(ds[self.training_bands[0]].y)
-                
                 xgrid,ygrid = np.meshgrid(x,y)
-                
                 mask = (np.ones_like(xgrid) * False).astype(bool)
                 
                 for ls in label_shps:
@@ -103,12 +101,12 @@ class ClassifierSICE():
                     idx_poly = p.contains_points(np.column_stack((xgrid.ravel(),ygrid.ravel())))
                     mask.ravel()[idx_poly] = True
                 
-                
                 training_data[d][f] = {k:np.array(ds[k])[mask] for k in self.training_bands}
+                #training_data[d][f] = {k:np.array(ds[k].where(mask))[mask] for k in self.training_bands}
                 
                 ds.close()
            
-            return training_data
+        return training_data
                 
     def train_svm(self,training_data = None,c = 1,weights = True):
         
@@ -116,54 +114,82 @@ class ClassifierSICE():
             training_data = self.get_training_data()
             
         t_days = list(training_data.keys())
+        
+        if len(t_days) > 2:
+            testing_date = t_days[-1]
+            print(f'Splitting Training Dates, Removing Date: {testing_date} for Testing')            
+        else: 
+            testing_date = None
+        
         features = list(training_data[t_days[0]].keys())
         n_features = len(features)
         n_bands = len(self.training_bands)
             
-        t_data = []
-        t_label = []
+        train_data = []
+        train_label = []
         
+       
         for f_int,f in enumerate(features):
-            data = [np.array([training_data[d][f][b] for b in self.training_bands]).T for d in t_days]
+            data = [np.array([training_data[d][f][b] for b in self.training_bands]).T for d in t_days if d != testing_date]
             data_stack = np.vstack([arr for arr in data])
-            t_data.append(data_stack)
+            train_data.append(data_stack)
             
-            label = (np.ones_like(data_stack[:,0]) * f_int).reshape(-1,1)
-            
-            t_label.append(label)
-            
-        t_data = np.vstack([arr for arr in t_data])
-        t_label = np.vstack([arr for arr in t_label]).ravel() 
+            label = (np.ones_like(data_stack[:,0]) * f_int).reshape(-1,1)            
+            train_label.append(label)
         
-        data_train, data_test, label_train, label_test \
-             = train_test_split(t_data, t_label, test_size=0.10, random_state=42) 
+        train_data = np.vstack([arr for arr in train_data])
+        train_label = np.vstack([arr for arr in train_label]).ravel() 
         
+        if testing_date is not None: 
+            
+            test_data = []
+            test_label = []
+            
+            for f_int,f in enumerate(features):
+                data = [np.array([training_data[testing_date][f][b] for b in self.training_bands]).T]
+                data_stack = np.vstack([arr for arr in data])
+                test_data.append(data_stack)
+                
+                label = (np.ones_like(data_stack[:,0]) * f_int).reshape(-1,1)
+                test_label.append(label)
+                
+            test_data = np.vstack([arr for arr in test_data])
+            test_label = np.vstack([arr for arr in test_label]).ravel() 
+            
+       
+        if testing_date is None:
+            train_data, test_data, train_label, test_label \
+                 = train_test_split(train_data, train_label, test_size=0.10, random_state=42) 
+            
         if weights:
             no_i = np.arange(50) #Number of iterations
-            w_all = np.ones_like(data_train)
+            w_all = np.ones_like(train_data)
             
             for n in np.arange(n_features):
                 for b in np.arange(n_bands):
-                    w = w_all[:,b][label_train  == n]
-                    d = data_train[:,b][label_train == n]
+                    w = w_all[:,b][train_label  == n]
+                    d = train_data[:,b][train_label == n]
                     sigma = np.std(d)
                     for i in no_i:
                         w = huber_w(w,d,sigma)
-                    w_all[:,b][label_train == n] = w 
+                    w_all[:,b][train_label == n] = w 
                     
             w_samples = np.array([np.nanmean(w) for w in w_all])        
-        else: 
-            w_samples = np.ones_like(label_train)
+        else:
+            w_samples = np.ones_like(train_label)
         
         
         model = svm.SVC(C = c, decision_function_shape="ovo",probability = True)
-        model.fit(data_train, label_train,sample_weight=w_samples)
+        model.fit(train_data, train_label,sample_weight=w_samples)
         
         data_split_svm = {}
         
         for i,f in enumerate(features): 
-            data_split_svm[f] = {'data_train' : data_train[label_train==i],'label_train' : label_train[label_train==i],\
-                                 'data_test' : data_test[label_test==i],'label_test' : label_test[label_test==i]}        
+            data_split_svm[f] = {'train_data' : train_data[train_label==i],'train_label' : train_label[train_label==i],\
+                                 'test_data' : test_data[test_label==i],'test_label' : test_label[test_label==i]}        
+                
+        data_split_svm['meta'] = {'testing_date' : testing_date}        
+        
         return model,data_split_svm
 
     def test_svm(self,model=None, data_split = None):
@@ -173,23 +199,40 @@ class ClassifierSICE():
             
         print('Test SVM for each Class \n')
         
-        classes = data_split.keys()
+        meta = data_split['meta']['testing_date']
+        
+        if meta is not None: 
+            print(f"The model is being tested on an independent date: {meta}")
+        
+        classes = list(data_split.keys())
         
         for cl in classes:
             
-            print(f'Test Results for Class {cl}:')
-            data_test = data_split[cl]['data_test']
-            label_test = data_split[cl]['label_test']
-            
-            #Predicting on Test Data:
-            
-            labels_pred = model.predict(data_test)
-            cm = confusion_matrix(labels_pred, label_test)
-            ac = np.round(accuracy_score(labels_pred,label_test),3)
-            
-            print(f"Accuracy of Model: {ac}")
-            print(f"Confusion Matrix of {cl}: \n {cm} \n")
-             
+            if cl !='meta':
+                
+                print(f'Test Results for Class {cl}:')
+                data_test = data_split[cl]['test_data']
+                label_test = data_split[cl]['test_label']
+                
+                #Predicting on Test Data:
+                
+                labels_pred = model.predict(data_test)
+                cm = confusion_matrix(labels_pred, label_test)
+                ac = np.round(accuracy_score(labels_pred,label_test),3)
+                
+                print(f"Accuracy of Predicting {cl}: {ac}")
+                print(f"Confusion Matrix of {cl}: \n {cm} \n")
+                
+                
+                for l in list(np.unique(labels_pred)):
+                    
+                    no_l_p = len(labels_pred[labels_pred==l])
+                    label_name_prd = classes[int(l)] 
+                    label_name_cor = cl
+                    
+                    print(f'Model Classified {label_name_prd} {no_l_p} times, the Correct Class was {label_name_cor} \n')
+                
+                
         return 
     
     def get_prediction_data(self,dates_to_predict):
