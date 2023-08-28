@@ -227,7 +227,8 @@ def RGBx(f_Red,f_Green,f_Blue, out_file):
     red_o = rasterio.open(f_Red)
     meta = red_o.meta.copy()
     meta.update({"count": 3,
-                 "nodata": -9999})
+                 "nodata": -9999,
+                 "compress": "lzw"})
     
     with rasterio.open(out_file, "w", **meta) as dest:
         for band, src in enumerate(bands, start=1):
@@ -267,14 +268,14 @@ bands = ["r_TOA_02", "r_TOA_04", "r_TOA_06", "r_TOA_08", "r_TOA_21"] ; version_n
 n_bands = len(bands)
 
 region_name='Greenland'
-# datex='2019-08-02'; year='2019'
+datex='2019-08-02'; year='2019'
 # datex='2021-07-30'; year='2021'
 # datex='2017-07-28' ; year='2017'
 
 #!! other dates
 # datex = "2017-07-12"; year = "2017"
 # datex = "2020-07-22"; year = "2020"
-datex='2022-07-31'; year='2022'
+# datex='2022-07-31'; year='2022'
 
 show_plots=1
 
