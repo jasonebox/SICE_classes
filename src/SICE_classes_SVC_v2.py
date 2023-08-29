@@ -3,7 +3,7 @@
 """
 Created on Mon Jul 24 12:41:27 2023
 
-@authors: Jason, Rasmus, Adrien
+@authors: Jason, Rasmus, Adrien, Jasper
 
 issues:
     For Jasper: see !! 
@@ -180,10 +180,11 @@ def read_S3(fn):
 
 from skimage import exposure # maybe add this to the import packages block at the top?
 
-def RGBx(f_Red,f_Green,f_Blue):
+def RGBx(f_Red,f_Green,f_Blue, out_file):
     red=read_S3(f_Red)
     gre=read_S3(f_Green)
     blu=read_S3(f_Blue)
+    
     vred=red<0
     vgre=gre<0
     vblu=blu<0
@@ -196,6 +197,7 @@ def RGBx(f_Red,f_Green,f_Blue):
     blu[vred]=np.nan
     blu[vgre]=np.nan
     blu[vblu]=np.nan
+    
     vred=red>1
     vgre=gre>1
     vblu=blu>1
@@ -218,6 +220,19 @@ def RGBx(f_Red,f_Green,f_Blue):
     # img[land] = exposure.adjust_log(img[land], 1.)
 #                    # Gamma
     img = exposure.adjust_gamma(img, 2)
+    
+    # export as geoTIFF:
+    bands = [red, gre, blu]
+    
+    red_o = rasterio.open(f_Red)
+    meta = red_o.meta.copy()
+    meta.update({"count": 3,
+                 "nodata": -9999,
+                 "compress": "lzw"})
+    
+    with rasterio.open(out_file, "w", **meta) as dest:
+        for band, src in enumerate(bands, start=1):
+            dest.write(src, band)
     
     return img    
 
@@ -258,8 +273,8 @@ datex='2019-08-02'; year='2019'
 # datex='2017-07-28' ; year='2017'
 
 #!! other dates
-# 2017-07-12
-# 2020-07-22
+# datex = "2017-07-12"; year = "2017"
+# datex = "2020-07-22"; year = "2020"
 # datex='2022-07-31'; year='2022'
 
 show_plots=1
@@ -295,7 +310,8 @@ if do_generate_rasters:
 
 temp=RGBx(f"{path_raw}{region_name}/{year}/{datex}_r_TOA_08.tif",
   f"{path_raw}{region_name}/{year}/{datex}_r_TOA_06.tif",
-  f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif")
+  f"{path_raw}{region_name}/{year}/{datex}_r_TOA_02.tif",
+  f"{path_raw}{region_name}/{year}/{datex}_r_TOA_RGB.tif")
 if show_plots:
     plt.imshow(temp)
     plt.axis("Off")
