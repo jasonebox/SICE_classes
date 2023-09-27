@@ -14,7 +14,7 @@ try to include dark ice from far northwest
 may be stretch range in QGIS, avoid bright patches, see examples of ok classes in [2019 example](https://github.com/jasonebox/SICE_classes/blob/main/Figs/2019-08-02_classes_SVM5bands_02_04_06_08_21.png)
 
 ## bright_ice
-use band 02, may be stretch range in QGIS, is usually lower in elevation than the dark ice area and can be above the dark ice area
+use band 02, may be stretch range in QGIS, is usually lower in elevation than the dark ice area ~~and can be above the dark ice area~~
 
 see examples of ok classes in [2019 example](https://github.com/jasonebox/SICE_classes/blob/main/Figs/2019-08-02_classes_SVM5bands_02_04_06_08_21.png)
 
