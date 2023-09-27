@@ -19,7 +19,9 @@ use band 02, may be stretch range in QGIS, is usually lower in elevation than th
 see examples of ok classes in [2019 example](https://github.com/jasonebox/SICE_classes/blob/main/Figs/2019-08-02_classes_SVM5bands_02_04_06_08_21.png)
 
 ## flooded_snow
-use band 08 to band 02 ratio output by ./src/from/SICE_classes_SVC_v2.py
+new comment: use RGB image instead of the following.
+
+band 08 to band 02 ratio output by ./src/from/SICE_classes_SVC_v2.py
 
 load the tif in QGIS, adjust contrast to from 1 to 1.6, then see the bright areas.
 
