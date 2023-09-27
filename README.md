@@ -40,6 +40,13 @@ use band 21, straight forward to see brighest snow covered areas at the uppermos
 use band 21, straight forward to see darker snow covered areas as compared to the uppermost ice sheet elevations where the band 21 reflectance is high
 
 ## red_snow
+revision 27/9, the RGB image "area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east."
+
+![image](https://github.com/jasonebox/SICE_classes/assets/32133350/02cbef70-5f98-47f4-af6e-051fab2bab1f)
+
+![image](https://github.com/jasonebox/SICE_classes/assets/32133350/aa091771-0a24-4553-bdb6-2c55888a7ec1)
+
+
 
 use band 08 to band 06 normalised difference ratio output by ./src/SICE_classes_SVC_v2.py outputs when user chooses do_generate_rasters=1
 
