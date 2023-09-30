@@ -28,19 +28,18 @@ use band 02, may be stretch range in QGIS, is usually lower in elevation than th
 see examples of ok classes in [2019 example](https://github.com/jasonebox/SICE_classes/blob/main/Figs/2019-08-02_classes_SVM5bands_02_04_06_08_21.png)
 
 ## flooded_snow
-new comment: use RGB image instead of the following.
+later using RGB image instead of (also useful) band 08 to band 02 ratio output by ./src/from/SICE_classes_SVC_v2.py
 
-band 08 to band 02 ratio output by ./src/from/SICE_classes_SVC_v2.py
-
-load the tif in QGIS, adjust contrast to from 1 to 1.6, then see the bright areas.
+When using band ratio, load the tif in QGIS, adjust contrast to from 1 to 1.6 to see the bright areas.
 
 The profile below is NE ice sheet, across a blue area easily visible in the 'true color' RGB image also below
 Areas above ~1.2 in the ratio are to be classified.
 <img width="400" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/05e4cb10-ea01-4d77-bf12-7c55c0b3104e">
 <img width="200" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/a349e61c-7f7d-4d06-ac5e-59e39d6e6f67">
 
+### examples
 
-Be more sure by checking using the RGB image that ./src/SICE_classes_SVC_v2.py outputs to the plot window. Note there is an issue to develop to make the RGB image output to a geotiff!
+![image 2021-07-30](https://github.com/jasonebox/SICE_classes/assets/32133350/c6307a7a-67a7-41dc-aa4a-4b6595d5679d)
 
 ## dry_snow
 use band 21, straight forward to see brighest snow covered areas at the uppermost ice sheet elevations
