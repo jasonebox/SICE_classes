@@ -43,6 +43,10 @@ Areas above ~1.2 in the ratio are to be classified.
 
 2021-07-30 NNW Greenland ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/3e039e5e-0ce6-4d6d-ab44-17ca28fa25db)
 
+2022-07-31 NNW Greenland Sentinel 2 ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/001e93ec-2802-4aa9-ba52-29ef9ec207ef)
+
+2022-07-31 NNW Greenland Sentinel 3 ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/cdc2c6f0-a95b-4645-b2ae-81974733e0ac)
+
 ## dry_snow
 use band 21, straight forward to see brighest snow covered areas at the uppermost ice sheet elevations
 
