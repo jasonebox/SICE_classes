@@ -39,7 +39,9 @@ Areas above ~1.2 in the ratio are to be classified.
 
 ### examples
 
- 2021-07-30 ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/c6307a7a-67a7-41dc-aa4a-4b6595d5679d)
+2021-07-30 SSW Greenland ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/c6307a7a-67a7-41dc-aa4a-4b6595d5679d)
+
+2021-07-30 NNW Greenland ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/3e039e5e-0ce6-4d6d-ab44-17ca28fa25db)
 
 ## dry_snow
 use band 21, straight forward to see brighest snow covered areas at the uppermost ice sheet elevations
@@ -48,8 +50,6 @@ use band 21, straight forward to see brighest snow covered areas at the uppermos
 use band 21, straight forward to see darker snow covered areas as compared to the uppermost ice sheet elevations where the band 21 reflectance is high
 
 ## red_snow
-
-
 
 the RGB image "area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east."
 
