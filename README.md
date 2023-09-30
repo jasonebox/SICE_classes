@@ -9,7 +9,7 @@ The labling work is by generating shapefiles using QGIS named as above and store
 ## dark_ice
 use band 02, mid way up western ablation area, see [Shimada et al 2016](https://www.frontiersin.org/articles/10.3389/feart.2016.00043/full)
 
-try to include dark ice from far northwest
+try to include far northwest
 
 may be stretch range in QGIS, avoid bright patches, see examples of ok classes in [2019 example](https://github.com/jasonebox/SICE_classes/blob/main/Figs/2019-08-02_classes_SVM5bands_02_04_06_08_21.png)
 
@@ -40,17 +40,24 @@ use band 21, straight forward to see brighest snow covered areas at the uppermos
 use band 21, straight forward to see darker snow covered areas as compared to the uppermost ice sheet elevations where the band 21 reflectance is high
 
 ## red_snow
-revision 27/9, the RGB image "area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east."
+
+### screen records of Jason labeling images, editing some of what Jasper had done, expanding labeled areas
+[video 1 classify red snow](https://youtu.be/YPBh6Y9hZAk)
+[video 2 classify flooded and red snow](https://youtu.be/kDgHtQccaUo)
+[video 3 classify all](https://youtu.be/_Z-4M6EW0dA)
+
+the RGB image "area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east."
 
 ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/02cbef70-5f98-47f4-af6e-051fab2bab1f)
 
 ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/aa091771-0a24-4553-bdb6-2c55888a7ec1)
 
+revision 27/9. Either use where band 08 to band 06 normalised difference ratio is in the range 0.02 to 0.04, or as I (JEB) did using RGB image, peripheral areas are 'golden' and constrast strongly with 'blue' areas to the east... could the golden be either a real algae signal or something about light conditions in relatively small glaciated areas.
 
-
+### August
 use band 08 to band 06 normalised difference ratio output by ./src/SICE_classes_SVC_v2.py outputs when user chooses do_generate_rasters=1
 
-red snow areas are where the NDIX is above ~0.0. The magnitude is small, so it may be questionable how accurate this approach is. Let's check out the results.
+red snow areas are where the NDIX is ~~above ~0.0~~ negative. The magnitude is small, ~-0.05 is a strong signal. Negative makes sense because the idea is that the reflectance of red snow would be higher and the NDXI is (green minus red) / (green + red)
 
 In this example, there is a small red? area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east.
 
