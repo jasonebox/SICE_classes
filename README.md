@@ -42,9 +42,13 @@ use band 21, straight forward to see darker snow covered areas as compared to th
 ## red_snow
 
 ### screen records of Jason labeling images, editing some of what Jasper had done, expanding labeled areas
+
 [video 1 classify red snow](https://youtu.be/YPBh6Y9hZAk)
+
 [video 2 classify flooded and red snow](https://youtu.be/kDgHtQccaUo)
+
 [video 3 classify all](https://youtu.be/_Z-4M6EW0dA)
+
 
 the RGB image "area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east."
 
