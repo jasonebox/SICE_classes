@@ -39,7 +39,7 @@ Areas above ~1.2 in the ratio are to be classified.
 
 ### examples
 
-![image 2021-07-30](https://github.com/jasonebox/SICE_classes/assets/32133350/c6307a7a-67a7-41dc-aa4a-4b6595d5679d)
+ 2021-07-30 ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/c6307a7a-67a7-41dc-aa4a-4b6595d5679d)
 
 ## dry_snow
 use band 21, straight forward to see brighest snow covered areas at the uppermost ice sheet elevations
