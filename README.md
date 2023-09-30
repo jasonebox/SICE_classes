@@ -6,6 +6,15 @@ features = ["dry_snow", "melted_snow", "flooded_snow", "red_snow", "bright_ice",
 
 The labling work is by generating shapefiles using QGIS named as above and stored in ./ROIs/Greenland in the appropriate dates. It is necessary to run ./src/SICE_classes_SVC_v2.py to generate the red to blue ratio image for flooded_snow and the NDIX image for red to green for red_snow. When running that top cell, select the correct date and see the output appear in ./SICE_rasters/ ... Open all rasters in QGIS to visualise and label as in instructions below. Just ask questions if any doubt and don't worry a lot about drawing the label polygons perfectly, more important is getting relatively large samples, i.e. >100 pixels... 1000 pixels should be enough but may be hard to find for some dates for the flooded snow and red_snow classes in particular. Talk with Rasmus about what to do when there are NO valid pixels for a given date.
 
+30 Sep, 2023 screen records of Jason labeling images, editing some of what Jasper had done, expanding labeled areas
+
+[video 1 classify red snow](https://youtu.be/YPBh6Y9hZAk)
+
+[video 2 classify flooded and red snow](https://youtu.be/kDgHtQccaUo)
+
+[video 3 classify all](https://youtu.be/_Z-4M6EW0dA)
+
+
 ## dark_ice
 use band 02, mid way up western ablation area, see [Shimada et al 2016](https://www.frontiersin.org/articles/10.3389/feart.2016.00043/full)
 
@@ -41,13 +50,6 @@ use band 21, straight forward to see darker snow covered areas as compared to th
 
 ## red_snow
 
-### screen records of Jason labeling images, editing some of what Jasper had done, expanding labeled areas
-
-[video 1 classify red snow](https://youtu.be/YPBh6Y9hZAk)
-
-[video 2 classify flooded and red snow](https://youtu.be/kDgHtQccaUo)
-
-[video 3 classify all](https://youtu.be/_Z-4M6EW0dA)
 
 
 the RGB image "area on the Sukkertoppen ice cap SW Greenland. Notice in the RGB image, also provided, the ice cap is not blue and there is blue flooded snow to the east."
