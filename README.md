@@ -37,6 +37,7 @@ Areas above ~1.2 in the ratio are to be classified.
 <img width="400" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/05e4cb10-ea01-4d77-bf12-7c55c0b3104e">
 <img width="200" alt="image" src="https://github.com/jasonebox/SICE_classes/assets/32133350/a349e61c-7f7d-4d06-ac5e-59e39d6e6f67">
 
+
 ### examples
 
 2021-07-30 SSW Greenland ![image](https://github.com/jasonebox/SICE_classes/assets/32133350/c6307a7a-67a7-41dc-aa4a-4b6595d5679d)
