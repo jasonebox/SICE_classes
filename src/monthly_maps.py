@@ -109,7 +109,7 @@ def multimaps(month,base_folder):
         mergemin = np.nanmin(data,axis=0)
         
         
-        name_median = month + "_SICE_Classes_monthlymedian_v2.tif"  
+        name_median = month + "_SICE_Classes_monthlymedian_v2.tif"
         exporttiff(x,y,mergemedian,CRS.from_string("+init=EPSG:3413"),output_folder,name_median)
         name_max = month + "_SICE_Classes_monthlymax_v2.tif"  
         exporttiff(x,y,mergemax,CRS.from_string("+init=EPSG:3413"),output_folder,name_max)

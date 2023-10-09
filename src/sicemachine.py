@@ -33,7 +33,8 @@ def compute_weighted_mean(w,d):
     return sum(w * d) / sum(w)
 
 def tukey_w(w,d,sigma):
-    # Huber weights, by variance for each band to allow higher prediction skill
+    # Tukey biweights, by variance for each band to allow higher prediction skill
+    
 
     break_p = 4.685
     ml_est = sum(w * d) / sum(w)
@@ -90,6 +91,10 @@ def freedman_bins(df):
     return int(np.ceil(bins))
     
 class ClassifierSICE():
+    
+    """ Surface type classifier for SICE, 
+    using Sentinel-3 Top of the Atmosphere reflectances (r_TOA) """
+    
     def __init__(self):
             self.src_folder = os.getcwd()
             self.base_folder = os.path.abspath('..')
@@ -225,6 +230,7 @@ class ClassifierSICE():
                     mu = compute_weighted_mean(w, x)
                     
                     x_weigted = x[w>0]
+                    sigma = np.nanstd(x_weigted)
                     
                     y_weighted = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
                          np.exp(-0.5 * (1 / sigma * (x_weigted - mu))**2)) 
@@ -414,8 +420,8 @@ class ClassifierSICE():
             
             for n in np.arange(n_features):
                 for b in np.arange(n_bands):
-                    w = w_all[:,b][train_label  == n]
-                    d = train_data[:,b][train_label == n]
+                    w = w_all[:,b][train_label==n]
+                    d = train_data[:,b][train_label==n]
                     sigma = np.std(d)
                     for i in no_i:
                         w = tukey_w(w,d,sigma)
